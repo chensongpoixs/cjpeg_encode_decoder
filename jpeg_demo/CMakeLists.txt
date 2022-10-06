@@ -1,6 +1,6 @@
 ﻿CMAKE_MINIMUM_REQUIRED(VERSION 3.14.2)
 
-PROJECT(audio_video)
+PROJECT(cjpeg_encode_decoder_demo)
 add_compile_options(-std=c++11)
 
 IF(WIN32)
