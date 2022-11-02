@@ -89,6 +89,7 @@ int main(int argc, char **argv)
     }
     filename = argv[1];
     codec_name = argv[2];
+    av_log_set_level(AV_LOG_DEBUG);
         //注册各大组件
     //av_register_all();
     //avcodec_register_all();
