@@ -118,7 +118,7 @@ JpegEncoder::JpegEncoder()
 	, m_height(0)
 	, m_rgbBuffer(0)
 {
-	//³õÊ¼»¯¾²Ì¬±í¸ñ
+	//åˆå§‹åŒ–é™æ€è¡¨æ ¼
 	_initHuffmanTables();
 }
 
@@ -141,10 +141,10 @@ void JpegEncoder::clean(void)
 //-------------------------------------------------------------------------------
 bool JpegEncoder::readFromBMP(const char* fileName)
 {
-	//ÇåÀí¾ÉÊı¾İ
+	//æ¸…ç†æ—§æ•°æ®
 	clean();
 
-	//BMP ÎÄ¼ş¸ñÊ½
+	//BMP æ–‡ä»¶æ ¼å¼
 #pragma pack(push, 2)
 	typedef struct {
 			unsigned short	bfType;
@@ -169,7 +169,7 @@ bool JpegEncoder::readFromBMP(const char* fileName)
 	} BITMAPINFOHEADER;
 #pragma pack(pop)
 
-	//´ò¿ªÎÄ¼ş
+	//æ‰“å¼€æ–‡ä»¶
 	FILE* fp = fopen(fileName, "rb");
 	if(fp==0) return false;
 
@@ -186,7 +186,7 @@ bool JpegEncoder::readFromBMP(const char* fileName)
 		if(infoHeader.biBitCount!=24 || infoHeader.biCompression!=0) break;
 		int width = infoHeader.biWidth;
 		int height = infoHeader.biHeight < 0 ? (-infoHeader.biHeight) : infoHeader.biHeight;
-		if((width&7)!=0 || (height&7)!=0) break;	//±ØĞëÊÇ8µÄ±¶Êı
+		if((width&7)!=0 || (height&7)!=0) break;	//å¿…é¡»æ˜¯8çš„å€æ•°
 
 		int bmpSize = width*height*3;
 
@@ -199,7 +199,7 @@ bool JpegEncoder::readFromBMP(const char* fileName)
 		{
 			for(int i=0; i<height; i++)
 			{
-				if(width != fread(buffer+(height-1-i)*width*3, 3, width, fp)) 
+				if(width != fread(buffer+(height-1-i)*width*3, 3, width, fp))
 				{
 					delete[] buffer; buffer=0;
 					break;
@@ -222,24 +222,24 @@ bool JpegEncoder::readFromBMP(const char* fileName)
 	}while(false);
 
 	fclose(fp);fp=0;
-	
+
 	return successed;
 }
 
 //-------------------------------------------------------------------------------
 bool JpegEncoder::encodeToJPG(const char* fileName, int quality_scale)
 {
-	//ÉĞÎ´¶ÁÈ¡£¿
+	//å°šæœªè¯»å–ï¼Ÿ
 	if(m_rgbBuffer==0 || m_width==0 || m_height==0) return false;
 
-	//Êä³öÎÄ¼ş
+	//è¾“å‡ºæ–‡ä»¶
 	FILE* fp = fopen(fileName, "wb");
 	if(fp==0) return false;
 
-	//³õÊ¼»¯Á¿»¯±í
+	//åˆå§‹åŒ–é‡åŒ–è¡¨
 	_initQualityTables(quality_scale);
 
-	//ÎÄ¼şÍ·
+	//æ–‡ä»¶å¤´
 	_write_jpeg_header(fp);
 
 	short prev_DC_Y = 0, prev_DC_Cb = 0, prev_DC_Cr = 0;
@@ -252,31 +252,31 @@ bool JpegEncoder::encodeToJPG(const char* fileName, int quality_scale)
 			char yData[64], cbData[64], crData[64];
 			short yQuant[64], cbQuant[64], crQuant[64];
 
-			//×ª»»ÑÕÉ«¿Õ¼ä
+			//è½¬æ¢é¢œè‰²ç©ºé—´
 			_convertColorSpace(xPos, yPos, yData, cbData, crData);
 
 			BitString outputBitString[128];
 			int bitStringCounts;
 
-			//YÍ¨µÀÑ¹Ëõ
+			//Yé€šé“å‹ç¼©
 			_foword_FDC(yData, yQuant);
-			_doHuffmanEncoding(yQuant, prev_DC_Y, m_Y_DC_Huffman_Table, m_Y_AC_Huffman_Table, outputBitString, bitStringCounts); 
+			_doHuffmanEncoding(yQuant, prev_DC_Y, m_Y_DC_Huffman_Table, m_Y_AC_Huffman_Table, outputBitString, bitStringCounts);
 			_write_bitstring_(outputBitString, bitStringCounts, newByte, newBytePos, fp);
 
-			//CbÍ¨µÀÑ¹Ëõ
-			_foword_FDC(cbData, cbQuant);			
+			//Cbé€šé“å‹ç¼©
+			_foword_FDC(cbData, cbQuant);
 			_doHuffmanEncoding(cbQuant, prev_DC_Cb, m_CbCr_DC_Huffman_Table, m_CbCr_AC_Huffman_Table, outputBitString, bitStringCounts);
 			_write_bitstring_(outputBitString, bitStringCounts, newByte, newBytePos, fp);
 
-			//CrÍ¨µÀÑ¹Ëõ
-			_foword_FDC(crData, crQuant);			
+			//Cré€šé“å‹ç¼©
+			_foword_FDC(crData, crQuant);
 			_doHuffmanEncoding(crQuant, prev_DC_Cr, m_CbCr_DC_Huffman_Table, m_CbCr_AC_Huffman_Table, outputBitString, bitStringCounts);
 			_write_bitstring_(outputBitString, bitStringCounts, newByte, newBytePos, fp);
 		}
 	}
 
-	_write_word_(0xFFD9, fp); //Write End of Image Marker   
-	
+	_write_word_(0xFFD9, fp); //Write End of Image Marker
+
 	fclose(fp);
 
 	return true;
@@ -285,12 +285,14 @@ bool JpegEncoder::encodeToJPG(const char* fileName, int quality_scale)
 //-------------------------------------------------------------------------------
 void JpegEncoder::_initHuffmanTables(void)
 {
+    /// äº®åº¦ACã€DCè¡¨
 	memset(&m_Y_DC_Huffman_Table, 0, sizeof(m_Y_DC_Huffman_Table));
 	_computeHuffmanTable(Standard_DC_Luminance_NRCodes, Standard_DC_Luminance_Values, m_Y_DC_Huffman_Table);
 
 	memset(&m_Y_AC_Huffman_Table, 0, sizeof(m_Y_AC_Huffman_Table));
 	_computeHuffmanTable(Standard_AC_Luminance_NRCodes, Standard_AC_Luminance_Values, m_Y_AC_Huffman_Table);
 
+    // ç°è‰²ACã€DCè¡¨
 	memset(&m_CbCr_DC_Huffman_Table, 0, sizeof(m_CbCr_DC_Huffman_Table));
 	_computeHuffmanTable(Standard_DC_Chrominance_NRCodes, Standard_DC_Chrominance_Values, m_CbCr_DC_Huffman_Table);
 
@@ -302,8 +304,8 @@ JpegEncoder::BitString JpegEncoder::_getBitCode(int value)
 {
 	BitString ret;
 	int v = (value>0) ? value : -value;
-	
-	//bit µÄ³¤¶È
+
+	//bit çš„é•¿åº¦
 	int length = 0;
 	for(length=0; v; v>>=1) length++;
 
@@ -316,19 +318,39 @@ JpegEncoder::BitString JpegEncoder::_getBitCode(int value)
 //-------------------------------------------------------------------------------
 void JpegEncoder::_initQualityTables(int quality_scale)
 {
-	if(quality_scale<=0) quality_scale=1;
-	if(quality_scale>=100) quality_scale=99;
+	if(quality_scale<=0)
+	{
+	    quality_scale=1;
+	}
+	if(quality_scale>=100)
+	{
+	    quality_scale=99;
+	}
 
 	for(int i=0; i<64; i++)
 	{
+	    // é‡åŒ–å€¼[1, 255]
 		int temp = ((int)(Luminance_Quantization_Table[i] * quality_scale + 50) / 100);
-		if (temp<=0) temp = 1;
-		if (temp>0xFF) temp = 0xFF;
+		if (temp<=0)
+		{
+		    temp = 1;
+		}
+		if (temp>0xFF)
+		{
+		    temp = 0xFF;
+		}
+		// è¡Œç¨‹ç 
 		m_YTable[ZigZag[i]] = (unsigned char)temp;
 
 		temp = ((int)(Chrominance_Quantization_Table[i] * quality_scale + 50) / 100);
-		if (temp<=0) 	temp = 1;
-		if (temp>0xFF) temp = 0xFF;
+		if (temp<=0)
+		{
+		    temp = 1;
+		}
+		if (temp>0xFF)
+		{
+		    temp = 0xFF;
+		}
 		m_CbCrTable[ZigZag[i]] = (unsigned char)temp;
 	}
 }

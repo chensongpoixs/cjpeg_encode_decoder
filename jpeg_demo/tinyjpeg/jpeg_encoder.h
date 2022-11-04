@@ -5,13 +5,13 @@
 class JpegEncoder
 {
 public:
-	/** ÇåÀíÊý¾Ý */
+	/** æ¸…ç†æ•°æ® */
 	void clean(void);
 
-	/** ´ÓBMPÎÄ¼þÖÐ¶ÁÈ¡ÎÄ¼þ£¬½öÖ§³Ö24bit£¬³¤¶ÈÊÇ8µÄ±¶ÊýµÄÎÄ¼þ */
+	/** ä»ŽBMPæ–‡ä»¶ä¸­è¯»å–æ–‡ä»¶ï¼Œä»…æ”¯æŒ24bitï¼Œé•¿åº¦æ˜¯8çš„å€æ•°çš„æ–‡ä»¶ */
 	bool readFromBMP(const char* fileName);
 
-	/** Ñ¹Ëõµ½jpgÎÄ¼þÖÐ£¬quality_scale±íÊ¾ÖÊÁ¿£¬È¡Öµ·¶Î§(0,100), Êý×ÖÔ½´óÑ¹Ëõ±ÈÀýÔ½¸ß*/
+	/** åŽ‹ç¼©åˆ°jpgæ–‡ä»¶ä¸­ï¼Œquality_scaleè¡¨ç¤ºè´¨é‡ï¼Œå–å€¼èŒƒå›´(0,100), æ•°å­—è¶Šå¤§åŽ‹ç¼©æ¯”ä¾‹è¶Šé«˜*/
 	bool encodeToJPG(const char* fileName, int quality_scale);
 
 private:
